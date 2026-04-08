@@ -1,12 +1,11 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Panic Button Extension",
   "version": "1.0",
   "description": "By pressing Ctrl+Shift+K you can switch to a safe window quickly. Go in extension options to add your safe window.",
-  "permissions": ["tabs", "storage", "background"],
+  "permissions": ["tabs", "storage"],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   },
   "options_ui": {
     "page": "options.html",

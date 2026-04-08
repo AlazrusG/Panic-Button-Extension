@@ -7,16 +7,20 @@ let safeWebsite = "";
 // Function to update the safe website URL
 function updateSafeWebsite(url) {
   safeWebsite = url;
-  // Save the safe website URL to localStorage
-  localStorage.setItem('safeWebsite', url);
+  // Save the safe website URL to extension storage
+  chrome.storage.sync.set({ safeWebsite: url });
 }
 
-// Function to retrieve the safe website URL from localStorage
-function retrieveSafeWebsite() {
-  const url = localStorage.getItem('safeWebsite');
-  if (url) {
-    safeWebsite = url;
-  }
+// Function to retrieve the safe website URL from extension storage
+function retrieveSafeWebsite(callback) {
+  chrome.storage.sync.get(['safeWebsite'], function (result) {
+    if (result.safeWebsite) {
+      safeWebsite = result.safeWebsite;
+    }
+    if (typeof callback === 'function') {
+      callback();
+    }
+  });
 }
 
 // Function to toggle panic mode
@@ -71,11 +75,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 // Listen for extension installation or update
 chrome.runtime.onInstalled.addListener(function () {
-  retrieveSafeWebsite();
-  if (!safeWebsite) {
-    chrome.tabs.create({ url: 'options.html' });
-    alert('Please set a safe website URL in the extension options.');
-  }
+  retrieveSafeWebsite(function () {
+    if (!safeWebsite) {
+      chrome.tabs.create({ url: 'options.html' });
+    }
+  });
 });
 
 // Log the safe website URL
